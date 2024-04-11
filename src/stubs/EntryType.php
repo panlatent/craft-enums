@@ -2,7 +2,7 @@
 
 namespace panlatent\craft\enums\stubs;
 
-use craft\elements\Entry as EntryElement;
+use craft\elements\Entry;
 use craft\helpers\ArrayHelper;
 use craft\models\EntryType as CraftEntryType;
 
@@ -14,10 +14,10 @@ enum EntryType
 {
     public function type(): CraftEntryType
     {
-        return ArrayHelper::firstWhere($this->section()->types(), 'handle', $this->handle());
+        return ArrayHelper::firstWhere($this->section()->section()->getEntryTypes(), 'handle', $this->handle());
     }
 
-    public function new(array $config = []): EntryElement
+    public function new(array $config = []): Entry
     {
         $entry = $this->section()->new($config);
         $entry->setTypeId($this->type()->id);
