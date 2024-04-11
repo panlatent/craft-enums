@@ -1,0 +1,13 @@
+{% if method == "section" %}
+return match($this) {
+    {%~ for section in cases|column('section')|unique %}
+    {% for case in cases %}{%- if case.section == section %}EntryType::{{ case.handle|ucfirst }}, {% endif %}{%~ endfor %}=> Section::{{ section|ucfirst }},
+    {%~ endfor %}
+};
+{% elseif method == "handle" %}
+return match($this) {
+    {%~ for type in cases|column('type')|unique %}
+    {% for case in cases %}{%- if case.type == type %}EntryType::{{ case.handle|ucfirst }}, {% endif %}{%~ endfor %}=> '{{ type }}',
+    {%~ endfor %}
+};
+{% endif %}
