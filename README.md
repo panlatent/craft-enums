@@ -39,6 +39,16 @@ use craft\generator\Command;
 use panlatent\craft\enums\Enums;
 use yii\base\Event;
 
+// CraftCMS 5.x
+Event::on(
+    Command::class,
+    Command::EVENT_REGISTER_GENERATORS,
+    function(RegisterComponentTypesEvent $e) {
+        $e->types[] = Enums::class;
+    }
+);
+
+// CraftCMS 4.x
 Event::on(
     Command::class,
     Command::EVENT_REGISTER_GENERATOR_TYPES,

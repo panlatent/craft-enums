@@ -11,6 +11,7 @@ use Nette\PhpGenerator\Factory;
 use Nette\PhpGenerator\PhpNamespace;
 use panlatent\craft\enums\stubs\Categories as CategoriesStub;
 use panlatent\craft\enums\stubs\EntryType as EntryTypeStub;
+use panlatent\craft\enums\stubs\EntryType5 as EntryType5Stub;
 use panlatent\craft\enums\stubs\Field as FieldStub;
 use panlatent\craft\enums\stubs\Section as SectionStub;
 use panlatent\craft\enums\stubs\Tags as TagsStub;
@@ -39,11 +40,21 @@ class Enums extends BaseGenerator
         ]);
 
         $this->writeFromStub(FieldStub::class, Craft::$app->getFields()->getAllFields(...));
-        $this->writeFromStub(SectionStub::class, Craft::$app->getSections()->getAllSections(...));
+
+        if (version_compare(Craft::$app->getVersion(), '5.0.0', '>=')) {
+            $this->writeFromStub(SectionStub::class, Craft::$app->getEntries()->getAllSections(...));
+        } else {
+            $this->writeFromStub(SectionStub::class, Craft::$app->getSections()->getAllSections(...));
+        }
         $this->writeFromStub(CategoriesStub::class, Craft::$app->getCategories()->getAllGroups(...));
         $this->writeFromStub(TagsStub::class, Craft::$app->getTags()->getAllTagGroups(...));
         $this->writeFromStub(VolumeStub::class, Craft::$app->getVolumes()->getAllVolumes(...));
-        $this->writeFromStub(EntryTypeStub::class, $this->getEntryTypeCases(...), $this->getEntryTypeMethods());
+
+        if (version_compare(Craft::$app->getVersion(), '5.0.0', '>=')) {
+            $this->writeFromStub(EntryType5Stub::class, $this->getEntryTypeCases(...));
+        } else {
+            $this->writeFromStub(EntryTypeStub::class, $this->getEntryTypeCases(...), $this->getEntryTypeMethods());
+        }
 
         $this->command->success("**Enums created!**");
         return true;
@@ -66,7 +77,7 @@ class Enums extends BaseGenerator
     protected function createEnum(string $stub, string $className = null): EnumType
     {
         $ref = new ReflectionEnum($stub);
-        $enum = new EnumType($className ?: $ref->getShortName());
+        $enum = new EnumType($className ?: preg_replace('#^(.+?)\d*$#', '\1', $ref->getShortName()));
         if ($ref->getBackingType() !== null) {
             $enum->setType($ref->getBackingType()->getName());
         }
@@ -130,10 +141,16 @@ class Enums extends BaseGenerator
 
     private function getEntryTypeCases(): array
     {
+        if (version_compare(Craft::$app->getVersion(), '5.0.0', '>=')) {
+            return Craft::$app->getEntries()->getAllEntryTypes();
+        }
+
         return array_map(function ($type) {
             $handle = $type->getSection()->handle . (($type->getSection()->type === Section::TYPE_SINGLE || $type->handle === 'default') ? '' : ucfirst($type->handle));
-            return new class($handle,  $type->getSection()->handle, $type->handle) {
-                public function __construct(public string $handle, public string $section, public $type) {}
+            return new class($handle, $type->getSection()->handle, $type->handle) {
+                public function __construct(public string $handle, public string $section, public $type)
+                {
+                }
             };
         }, Craft::$app->getSections()->getAllEntryTypes());
     }
