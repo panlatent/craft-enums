@@ -125,7 +125,7 @@ class Enums extends BaseGenerator
         }
         $end = $method->getEndLine() - 1;
         $body = array_slice($lines, $start + 1, $end - $start - 1);
-        return implode("\n", array_map(trim(...), $body));
+        return implode("\n", array_map(fn($line) => substr(rtrim($line), 8), $body));
     }
 
     private function getEntryTypeCases(): array
