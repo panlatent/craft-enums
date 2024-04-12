@@ -57,7 +57,7 @@ class Enums extends BaseGenerator
 
         $ref = new ReflectionEnum($stub);
         $content = file_get_contents($ref->getFileName());
-        preg_match_all('#use\s+(?<namespace>[a-zA-Z_][a-zA-Z0-9_]*(?:\\\[a-zA-Z_][a-zA-Z0-9_]*)*)(\s+as\s+(?<alias>[a-zA-Z_][a-zA-Z0-9_]*)|)\s*#', $content, $matches);
+        preg_match_all('#use\s+(?<namespace>[a-zA-Z_]\w*(\\\[a-zA-Z_]\w*)*)(\s+as\s+(?<alias>[a-zA-Z_]\w*)|)\s*#n', $content, $matches); // `/n` modifier require PHP 8.2
         $uses = array_combine($matches['namespace'], $matches['alias']);
 
         $this->writeEnum($enum, $uses);
