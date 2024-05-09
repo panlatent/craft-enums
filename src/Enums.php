@@ -4,6 +4,7 @@ namespace panlatent\craft\enums;
 
 use Craft;
 use craft\generator\BaseGenerator;
+use craft\helpers\App;
 use craft\helpers\ArrayHelper;
 use craft\models\Section;
 use Nette\PhpGenerator\EnumType;
@@ -25,6 +26,8 @@ use Twig\TwigFilter;
  */
 class Enums extends BaseGenerator
 {
+    public const DISABLE_INTERACTIVE = 'DISABLE_INTERACTIVE';
+
     /**
      * @var string
      */
@@ -35,9 +38,13 @@ class Enums extends BaseGenerator
      */
     public function run(): bool
     {
-        $this->namespace = $this->namespacePrompt('Enums namespace:', [
-            'default' => "$this->baseNamespace\\enums",
-        ]);
+        if (App::env(self::DISABLE_INTERACTIVE)) {
+            $this->namespace = $this->baseNamespace . '\\enums';
+        } else {
+            $this->namespace = $this->namespacePrompt('Enums namespace:', [
+                'default' => "$this->baseNamespace\\enums",
+            ]);
+        }
 
         $this->writeFromStub(FieldStub::class, Craft::$app->getFields()->getAllFields(...));
 
