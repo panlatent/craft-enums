@@ -7,6 +7,7 @@ use craft\generator\BaseGenerator;
 use craft\helpers\App;
 use craft\helpers\ArrayHelper;
 use craft\models\Section;
+use Nette\PhpGenerator\EnumCase;
 use Nette\PhpGenerator\EnumType;
 use Nette\PhpGenerator\Factory;
 use Nette\PhpGenerator\PhpNamespace;
@@ -109,9 +110,13 @@ class Enums extends BaseGenerator
             return $a->handle <=> $b->handle;
         });
         $type = $enum->getType();
+        $cases = [];
         foreach ($items as $item) {
-            $enum->addCase(ucfirst($item->handle), $type ? $item->handle : null);
+            $cases[] = (new EnumCase(ucfirst($item->handle)))
+                ->setValue($type ? $item->handle : null)
+                ->setComment($item->name ?? '');
         }
+        $enum->setCases($cases);
     }
 
     protected function makeMethods(EnumType $enum, array $methods): void
@@ -153,9 +158,11 @@ class Enums extends BaseGenerator
         }
 
         return array_map(function ($type) {
-            $handle = $type->getSection()->handle . (($type->getSection()->type === Section::TYPE_SINGLE || $type->handle === 'default') ? '' : ucfirst($type->handle));
-            return new class($handle, $type->getSection()->handle, $type->handle) {
-                public function __construct(public string $handle, public string $section, public $type)
+            $isDefault = $type->getSection()->type === Section::TYPE_SINGLE || $type->handle === 'default';
+            $handle = $type->getSection()->handle . ($isDefault ? '' : ucfirst($type->handle));
+            $name = $isDefault ? $type->getSection()->name : sprintf("%s (%s)", $type->name, $type->getSection()->name);
+            return new class($handle, $type->getSection()->handle, $type->handle, $name) {
+                public function __construct(public string $handle, public string $section, public $type, public string $name = '')
                 {
                 }
             };
