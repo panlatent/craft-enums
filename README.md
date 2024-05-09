@@ -5,15 +5,18 @@ The Craft Enum is a PHP enum generator.
 It generates all Fields, Section, Volume ... handles write to code as cases.
 
 ```php
-// Replace string handle
-$section = Craft::$app->secionts->getSectionByHandle(Section::Posts);
 // Get a section
 $section = Section::Posts->self() 
 // Create a entry with sectionId
 $entry = Section::Posts->new()
 // Entry query with section
 $entryQuery = Section::Post->find();
+// Replace string handle (Not recommended)
+$section = Craft::$app->secionts->getSectionByHandle(Section::Posts->value);
 ```
+
+    Note: You cannot use PHP enumerations to directly replace string. You should write `getSectionByHandle(Section::Posts->value)` instead of `getSectionByHandle(Section::Posts)`(error).
+          Maybe, never try to use enums instead of strings or constants, but use the convenience methods of the enum class.
 
 Requirements
 ------------
