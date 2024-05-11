@@ -6,7 +6,7 @@ It generates all Fields, Section, Volume ... handles write to code as cases.
 
 ```php
 // Get a section
-$section = Section::Posts->self() 
+$section = Section::Posts->section() 
 // Create a entry with sectionId
 $entry = Section::Posts->new()
 // Entry query with section
@@ -33,32 +33,6 @@ composer require panlatent/craft-enum --dev
 If you started your project with a version of Craft earlier than 4.3.5, update and run:
 ```
 composer require craftcms/generator --dev
-```
-
-Registering Enums generator:
-```bash
-use craft\events\RegisterComponentTypesEvent;
-use craft\generator\Command;
-use panlatent\craft\enums\Enums;
-use yii\base\Event;
-
-// CraftCMS 5.x
-Event::on(
-    Command::class,
-    Command::EVENT_REGISTER_GENERATORS,
-    function(RegisterComponentTypesEvent $e) {
-        $e->types[] = Enums::class;
-    }
-);
-
-// CraftCMS 4.x
-Event::on(
-    Command::class,
-    Command::EVENT_REGISTER_GENERATOR_TYPES,
-    function(RegisterComponentTypesEvent $e) {
-        $e->types[] = Enums::class;
-    }
-);
 ```
 
 Usage

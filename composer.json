@@ -1,11 +1,14 @@
 {
     "name": "panlatent/craft-enums",
-    "type": "library",
+    "type": "yii2-extension",
     "license": "MIT",
     "autoload": {
         "psr-4": {
             "panlatent\\craft\\enums\\": "src/"
         }
+    },
+    "extra": {
+        "bootstrap": "panlatent\\craft\\enums\\Extension"
     },
     "authors": [
         {
