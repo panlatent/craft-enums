@@ -30,11 +30,6 @@ Installation
 composer require panlatent/craft-enum --dev
 ```
 
-If you started your project with a version of Craft earlier than 4.3.5, update and run:
-```
-composer require craftcms/generator --dev
-```
-
 Usage
 ------
 
@@ -79,4 +74,4 @@ References
 
 License
 -------
-The Element Messages is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+The project is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
