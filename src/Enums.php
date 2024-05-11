@@ -16,6 +16,7 @@ use panlatent\craft\enums\stubs\EntryType as EntryTypeStub;
 use panlatent\craft\enums\stubs\EntryType5 as EntryType5Stub;
 use panlatent\craft\enums\stubs\Field as FieldStub;
 use panlatent\craft\enums\stubs\Section as SectionStub;
+use panlatent\craft\enums\stubs\Section5 as Section5Stub;
 use panlatent\craft\enums\stubs\Tags as TagsStub;
 use panlatent\craft\enums\stubs\Volume as VolumeStub;
 use ReflectionEnum;
@@ -35,6 +36,11 @@ class Enums extends BaseGenerator
     private string $namespace;
 
     /**
+     * @var bool
+     */
+    private bool $is5 = false;
+
+    /**
      * @inheritdoc
      */
     public function run(): bool
@@ -47,10 +53,11 @@ class Enums extends BaseGenerator
             ]);
         }
 
-        $this->writeFromStub(FieldStub::class, Craft::$app->getFields()->getAllFields(...));
+        $this->is5 = version_compare(Craft::$app->getVersion(), '5.0.0', '>=');
 
-        if (version_compare(Craft::$app->getVersion(), '5.0.0', '>=')) {
-            $this->writeFromStub(SectionStub::class, Craft::$app->getEntries()->getAllSections(...));
+        $this->writeFromStub(FieldStub::class, Craft::$app->getFields()->getAllFields(...));
+        if ($this->is5) {
+            $this->writeFromStub(Section5Stub::class, Craft::$app->getEntries()->getAllSections(...));
         } else {
             $this->writeFromStub(SectionStub::class, Craft::$app->getSections()->getAllSections(...));
         }
@@ -58,7 +65,7 @@ class Enums extends BaseGenerator
         $this->writeFromStub(TagsStub::class, Craft::$app->getTags()->getAllTagGroups(...));
         $this->writeFromStub(VolumeStub::class, Craft::$app->getVolumes()->getAllVolumes(...));
 
-        if (version_compare(Craft::$app->getVersion(), '5.0.0', '>=')) {
+        if ($this->is5) {
             $this->writeFromStub(EntryType5Stub::class, $this->getEntryTypeCases(...));
         } else {
             $this->writeFromStub(EntryTypeStub::class, $this->getEntryTypeCases(...), $this->getEntryTypeMethods());
@@ -153,7 +160,7 @@ class Enums extends BaseGenerator
 
     private function getEntryTypeCases(): array
     {
-        if (version_compare(Craft::$app->getVersion(), '5.0.0', '>=')) {
+        if ($this->is5) {
             return Craft::$app->getEntries()->getAllEntryTypes();
         }
 
